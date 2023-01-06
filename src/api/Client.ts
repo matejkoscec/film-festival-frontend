@@ -77,7 +77,7 @@ export default class Client {
               };
             })
           : [];
-        res = { ...res, data: { ...res.data, id: surveyId, attributes: { answers } } } as SurveyAnswersResponse;
+        res = { ...res, data: { ...res.data, id: surveyId, attributes: { answers } } };
       }
     }
 

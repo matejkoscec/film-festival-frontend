@@ -22,8 +22,8 @@ if (API_BASE_URL) {
 
 app.use(express.static(path.join(__dirname, "dist")));
 
-app.listen(PORT, () => {
-  console.log(`Application running on port ${PORT}`);
+app.listen(PORT || 4444, () => {
+  console.log(`Application running on port ${PORT || 4444}`);
 });
 
 app.get("*", (req, res) => {

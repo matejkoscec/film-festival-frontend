@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { useNavigate } from "react-router-dom";
 
 import paths from "../../api/paths";
@@ -11,11 +11,11 @@ import LoadingError from "../../components/Fallback/LoadingError";
 import SurveyForm from "../../components/SurveyForm/SurveyForm";
 import useYupValidation from "../../hook/useYupValidation";
 
-type Form = {
+export type SurveyFormType = {
   [key: string]: string;
 };
 
-const useInitialValues = (survey: SurveyResponse | undefined): Form => {
+const useInitialValues = (survey: SurveyResponse | undefined): SurveyFormType => {
   return survey
     ? survey.data.attributes.questions.reduce(
         (acc, question) => ({
@@ -26,6 +26,9 @@ const useInitialValues = (survey: SurveyResponse | undefined): Form => {
       )
     : {};
 };
+
+const getSurveyStatusCodes = [200, 500];
+const postSurveyAnswersStatusCodes = [201, 422];
 
 export default function Index() {
   const { client } = useClient();
@@ -39,8 +42,11 @@ export default function Index() {
   const ValidationSchema = useYupValidation(survey);
 
   React.useEffect(() => {
+    // get random getSurveyStatusCode with 80% chance of 200 to demonstrate functionality
+    const randomSurveyStatusCode = getSurveyStatusCodes[Math.floor(Math.random() * 5) < 4 ? 0 : 1];
+
     client
-      .get(paths.survey.get, 200)
+      .get(paths.survey.get, randomSurveyStatusCode)
       .then((survey) => {
         setSurvey(survey);
         setError(undefined);
@@ -48,21 +54,27 @@ export default function Index() {
       .catch((error) => setError(JSON.parse(error.message)));
   }, [client]);
 
-  const handleSubmit = (values: Form) => {
+  const handleSubmit = (values: SurveyFormType, helpers: FormikHelpers<SurveyFormType>) => {
     if (!survey) return;
 
+    // get random postSurveyAnswersStatusCode with 80% chance of 201 to demonstrate functionality
+    const randomSurveyAnswersStatusCode = postSurveyAnswersStatusCodes[Math.floor(Math.random() * 5) < 4 ? 0 : 1];
+
     client
-      .post(paths.survey.answers(survey?.data.id), values, 201)
+      .post(paths.survey.answers(survey?.data.id), values, randomSurveyAnswersStatusCode)
       .then((response) => {
         setSubmitError(undefined);
         navigate("/success", { state: { response } });
       })
-      .catch((error) => setSubmitError(JSON.parse(error.message)));
+      .catch((error) => {
+        helpers.setSubmitting(false);
+        setSubmitError(JSON.parse(error.message));
+      });
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen">
-      <div className="shadow-md p-8 rounded-3xl">
+    <div className="flex flex-col items-center min-h-screen relative overflow-hidden pb-10">
+      <div className="bg-gray-50 shadow-lg p-8 rounded-3xl z-10 2xl:w-1/3 max-w-3xl mt-52 m-4">
         {(() => {
           if (error) return <LoadingError error={error} />;
 

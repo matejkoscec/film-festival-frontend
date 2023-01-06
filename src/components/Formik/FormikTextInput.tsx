@@ -30,9 +30,9 @@ export default function FormikTextInput<T>({
   const fieldError = errors[name];
 
   return (
-    <div className={`flex flex-col relative ${className}`}>
+    <div className={`flex flex-col relative gap-1 transition-all ${className}`}>
       {label && (
-        <label htmlFor={name as string} className="font-semibold text-sm">
+        <label htmlFor={name as string} className="font-semibold">
           {label}
         </label>
       )}
@@ -42,9 +42,9 @@ export default function FormikTextInput<T>({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
-        className={`outline-none border rounded-lg p-2 ${inputClassName} ${fieldError ? "border-red-500" : ""}`}
+        className={`outline-none border rounded-lg py-2 px-3 ${inputClassName} ${fieldError ? "border-red-500" : ""}`}
       />
-      {fieldError && <div className="text-red-500 text-sm absolute -bottom-5 right-0">{fieldError.toString()}</div>}
+      {fieldError && <div className="text-red-500 text-sm absolute -bottom-5 right-0 ">{fieldError.toString()}</div>}
     </div>
   );
 }

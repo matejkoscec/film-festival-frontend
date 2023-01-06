@@ -29,9 +29,9 @@ export default function FormikRadioGroup<T>({
   const value = values[name];
 
   return (
-    <div className={`flex flex-col relative ${className}`}>
+    <div className={`flex flex-col relative gap-2 ${className}`}>
       {label && (
-        <label htmlFor={name as string} className="font-semibold text-sm">
+        <label htmlFor={name as string} className="font-semibold">
           {label}
         </label>
       )}
@@ -72,8 +72,25 @@ function RatingButtons<T>({
 }: RatingButtonsProps<T>) {
   const ratings = Array.from({ length: max - min + 1 }, (_, i) => i + min);
 
+  const getRatingMessage = (rating: number) => {
+    switch (rating) {
+      case 1:
+        return "Very bad";
+      case 2:
+        return "Bad";
+      case 3:
+        return "Okay";
+      case 4:
+        return "Good";
+      case 5:
+        return "Very good";
+      default:
+        return "";
+    }
+  };
+
   return (
-    <div className={`flex flex-row justify-evenly w-full text-center gap-2 ${className}`}>
+    <div className={`flex flex-row justify-evenly w-full text-center ${className}`}>
       {ratings.map((rating) => (
         <div
           key={rating}
@@ -83,10 +100,13 @@ function RatingButtons<T>({
           className="w-full cursor-pointer"
         >
           <input type="radio" name={name as string} value={rating} disabled={disabled} className="hidden" />
-          <div className="flex flex-col items-center justify-center">
+          <div
+            className={`flex flex-col items-center justify-center h-16 sm:h-20 ${
+              rating !== value && "hover:border-b-8 hover:border-indigo-500 transform duration-200"
+            } ${rating === value ? "bg-gradient-to-b from-indigo-500 to-indigo-400 text-white rounded-2xl" : ""}`}
+          >
             <div className="text-2xl">{rating}</div>
-            <div className="text-xs">stars</div>
-            {value === rating && <div className="text-xs">selected</div>}
+            <p className="font-light hidden sm:block">{getRatingMessage(rating)}</p>
           </div>
         </div>
       ))}

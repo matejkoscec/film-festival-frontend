@@ -22,6 +22,10 @@ export default function useYupValidation(survey?: SurveyResponse) {
 
       if (min) acc[questionId] = acc[questionId].min(min as number);
       if (max) acc[questionId] = acc[questionId].max(max as number);
+    } else {
+      if (questionType === "text") {
+        acc[questionId] = acc[questionId].max(1000, "Too many characters");
+      }
     }
 
     return acc;
