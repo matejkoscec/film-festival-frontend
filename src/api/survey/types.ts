@@ -10,11 +10,9 @@ export type SurveyResponse = {
         questionType: string;
         label: string;
         required: boolean;
-        attributes:
-          | null
-          | {
-              [key: string]: number | string;
-            }[];
+        attributes: null | {
+          [key: string]: number | string;
+        };
       }[];
     };
   };

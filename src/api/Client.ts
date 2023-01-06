@@ -1,4 +1,5 @@
 import survey, { MockedPath } from "../mock/survey/survey";
+import { SurveyAnswersResponse } from "./survey/types";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
 
@@ -54,7 +55,10 @@ export default class Client {
   private async mockResponse<T>(method: HttpMethod, path: string, body?: T, statusCode?: number) {
     if (!statusCode) return {};
 
-    path = path.replace(/\/\d+/, "/{id}");
+    const surveyId = path.split("/")[path.split("/").length - 2];
+    if (path.includes("/api/v1/survey/") && path.includes("/answers")) {
+      path = "/api/v1/survey/{id}/answers";
+    }
 
     let res;
     if (method === "GET") {
@@ -62,6 +66,19 @@ export default class Client {
     }
     if (method === "POST") {
       res = survey.post(path as MockedPath, statusCode);
+
+      if (statusCode === 201) {
+        res = res as SurveyAnswersResponse;
+        const answers = body
+          ? Object.keys(body).map((key) => {
+              return {
+                questionId: key,
+                answer: body[key as keyof T],
+              };
+            })
+          : [];
+        res = { ...res, data: { ...res.data, id: surveyId, attributes: { answers } } } as SurveyAnswersResponse;
+      }
     }
 
     if (!(statusCode >= 200 && statusCode < 300)) throw new Error(JSON.stringify(res));

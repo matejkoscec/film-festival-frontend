@@ -29,7 +29,7 @@ const mockResponse: MockResponse = {
   "/api/v1/survey/{id}/answers": {
     POST: {
       201: surveryAnswersData.post201,
-      500: surveryAnswersData.post422,
+      422: surveryAnswersData.post422,
     },
   },
 };
